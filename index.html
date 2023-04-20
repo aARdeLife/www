@@ -3,34 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Vision XR</title>
+    <title>Object Recognition</title>
     <style>
-        body { margin: 0; }
-        #container { position: relative; }
-        canvas, video { position: absolute; top: 0; left: 0; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        #video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
         #tooltip {
             position: absolute;
-            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 2;
             padding: 5px;
+            background-color: white;
+            border: 1px solid black;
             border-radius: 5px;
             display: none;
-            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <video id="video" autoplay></video>
-        <canvas id="canvas"></canvas>
-        <div id="tooltip"></div>
-    </div>
-
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    <div id="tooltip"></div>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gltf-loader/1.0.0/GLTFLoader.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
