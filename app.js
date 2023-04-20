@@ -41,46 +41,5 @@ async function displayObjectInfo(prediction) {
 
 function render3DModel(bbox) {
     sessionStorage.setItem('objectBbox', JSON.stringify(bbox));
-    sessionStorage.setItem('modelURL', 'https://github.com/aARdeLife/SuperVision/blob/6e7ab011f51b2483b72237297fbffd5e27a470cc/polaris/polforweb%20(3).glb');
-    window.open('file:///C:/Users/Shadow/Desktop/Super%20Vision%20XR/3dmodel.html');
-}
-
-async function detectObjects() {
-    const model = await cocoSsd.load();
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    currentPredictions = [];
-    
-    while (true) {
-        const predictions = await model.detect(video);
-        currentPredictions = predictions;
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-        predictions.forEach(prediction => {
-            ctx.strokeStyle = 'green';
-            ctx.lineWidth = 4;
-            ctx.strokeRect(...prediction.bbox);
-        });
-
-        await tf.nextFrame();
-    }
-}
-
-(async function() {
-    const videoElement = await setupCamera();
-    videoElement.play();
-    detectObjects();
-})();
-
-
-        await tf.nextFrame();
-    }
-}
-
-(async function() {
-    const videoElement = await setupCamera();
-    videoElement.play();
-    detectObjects();
-})();
+    sessionStorage.setItem('modelURL
 
