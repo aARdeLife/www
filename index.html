@@ -6,7 +6,8 @@
     <title>Super Vision XR</title>
     <style>
         body { margin: 0; }
-        canvas { position: absolute; top: 0; left: 0; }
+        #container { position: relative; }
+        canvas, video { position: absolute; top: 0; left: 0; }
         #tooltip {
             position: absolute;
             background-color: rgba(255, 255, 255, 0.8);
@@ -15,13 +16,23 @@
             display: none;
             font-size: 0.8rem;
         }
+        #threeContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: none;
+            width: 50%;
+            height: 50%;
+        }
     </style>
 </head>
 <body>
-    <video id="video" autoplay></video>
-    <canvas id="canvas"></canvas>
-    <canvas id="threeCanvas" style="display: none;"></canvas>
-    <div id="tooltip"></div>
+    <div id="container">
+        <video id="video" autoplay></video>
+        <canvas id="canvas"></canvas>
+        <div id="threeContainer"></div>
+        <div id="tooltip"></div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
