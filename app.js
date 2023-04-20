@@ -1,117 +1,99 @@
-const video = document.getElementById('video');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const videoElement = document.getElementById('video');
+const canvasElement = document.getElementById('canvas');
+const ctx = canvasElement.getContext('2d');
 const tooltip = document.getElementById('tooltip');
-const threeContainer = document.getElementById('threeContainer');
 
 async function setupCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
-    video.srcObject = stream;
+    videoElement.srcObject = stream;
+    videoElement.width = window.innerWidth;
+    videoElement.height = window.innerHeight;
+    canvasElement.width = videoElement.width;
+    canvasElement.height = videoElement.height;
     return new Promise(resolve => {
-        video.onloadedmetadata = () => {
-            resolve(video);
+        videoElement.onloadedmetadata = () => {
+            resolve(videoElement);
         };
     });
 }
 
-function isPointInRect(x, y, rect) {
-    return x >= rect[0] && x <= rect[0] + rect[2] && y >= rect[1] && y <= rect[1] + rect[3];
-}
-
-canvas.addEventListener('mousemove', async event => {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    for (const prediction of currentPredictions) {
-        if (isPointInRect(x, y, prediction.bbox)) {
-            displayObjectInfo(prediction, x, y);
-            return;
-        }
-    }
-
-    tooltip.style.display = 'none';
-});
-
-canvas.addEventListener('click', async event => {
-    const rect = canvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    for (const prediction of currentPredictions) {
-        if (isPointInRect(x, y, prediction.bbox)) {
-            render3DModel('https://github.com/aARdeLife/SuperVision/blob/6e7ab011f51b2483b72237297fbffd5e27a470cc/polaris/polforweb%20(3).glb');
-            return;
-        }
-    }
-});
-
-async function displayObjectInfo(prediction, x, y) {
-    const objectName = prediction.class;
-    const objectInfo = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${objectName}`)
-        .then(response => response.json())
-        .then(data => data.extract);
-
-    tooltip.style.display = 'block';
-    tooltip.style.left = `${x + 5}px`;
-    tooltip.style.top = `${y + 5}px`;
-    tooltip.innerText = `${objectName}: ${objectInfo}`;
-}
-
-async function render3DModel(modelURL) {
-    threeContainer.style.display = 'block';
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
-    threeContainer.appendChild(renderer.domElement);
-
-    const loader = new THREE.GLTFLoader();
-    loader.load(modelURL, (gltf) => {
-        scene.add(gltf.scene);
-    }, undefined, (error) => {
-        console.error('Error rendering 3D model:', error);
-    });
-
-    camera.position.z = 5;
-
-    const animate = function () {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    };
-
-    animate();
-}
-
 async function detectObjects() {
-    const model = await cocoSsd.load();
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    currentPredictions = [];
-
+    const net = await cocoSsd.load();
     while (true) {
-        const predictions = await model.detect(video);
-        currentPredictions = predictions;
+        const predictions = await net.detect(videoElement);
+
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
+        ctx.drawImage(videoElement, 0, 0, ctx.canvas.width, ctx.canvas.height);
+
         predictions.forEach(prediction => {
-            ctx.strokeStyle = 'green';
-                       ctx.lineWidth = 4;
+            ctx.strokeStyle = '#00FF00';
+            ctx.lineWidth = 4;
             ctx.strokeRect(...prediction.bbox);
         });
+
+        canvasElement.onmousemove = (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            const prediction = predictions.find(p => {
+                const [x, y, width, height] = p.bbox;
+                return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+            });
+
+            if (prediction) {
+                tooltip.style.display = 'block';
+                tooltip.style.left = `${e.clientX}px`;
+                tooltip.style.top = `${e.clientY}px`;
+                tooltip.textContent = `${prediction.class}`;
+            } else {
+                tooltip.style.display = 'none';
+            }
+        };
+
+        canvasElement.onclick = async (e) => {
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            const prediction = predictions.find(p => {
+                const [x, y, width, height] = p.bbox;
+                return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+            });
+
+            if (prediction) {
+                await render3DModel();
+            }
+        };
 
         await tf.nextFrame();
     }
 }
 
-(async function() {
+async function render3DModel() {
+    const modelURL = 'https://raw.githubusercontent.com/aARdeLife/www/24c418c270c508983064244597f661b3791889a8/polforweb%20(3).glb';
+
+    const scene = document.createElement('a-scene');
+    scene.setAttribute('embedded', '');
+    scene.setAttribute('arjs', 'sourceType: webcam; debugUIEnabled: false;');
+    scene.setAttribute('vr-mode-ui', 'enabled: false');
+
+    const marker = document.createElement('a-marker');
+    marker.setAttribute('type', 'plane');
+    marker.setAttribute('size', '200 200');
+    scene.appendChild(marker);
+
+    const model = document.createElement('a-entity');
+    model.setAttribute('gltf-model', `url(${modelURL})`);
+    model.setAttribute('scale', '0.05 0.05 0.05');
+    model.setAttribute('position', '0 0 0');
+    marker.appendChild(model);
+
+    document.body.appendChild(scene);
+}
+
+(async function () {
     const videoElement = await setupCamera();
     videoElement.play();
     detectObjects();
 })();
-
-
-
 
