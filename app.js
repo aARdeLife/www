@@ -96,7 +96,7 @@ async function detectObjects() {
         currentPredictions = predictions;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        predictions.forEach(prediction => {
+                predictions.forEach(prediction => {
             ctx.strokeStyle = 'green';
             ctx.lineWidth = 4;
             ctx.strokeRect(...prediction.bbox);
@@ -111,3 +111,5 @@ async function detectObjects() {
     videoElement.play();
     detectObjects();
 })();
+
+
