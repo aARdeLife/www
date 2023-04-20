@@ -2,7 +2,7 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const tooltip = document.getElementById('tooltip');
-const threeCanvas = document.getElementById('threeCanvas');
+const threeContainer = document.getElementById('threeContainer');
 
 async function setupCamera() {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
@@ -59,13 +59,13 @@ async function displayObjectInfo(prediction, x, y) {
 }
 
 async function render3DModel(modelURL) {
-    threeCanvas.style.display = 'block';
+    threeContainer.style.display = 'block';
 
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: threeCanvas });
-
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    const camera = new THREE.PerspectiveCamera(75, threeContainer.clientWidth / threeContainer.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(threeContainer.clientWidth, threeContainer.clientHeight);
+    threeContainer.appendChild(renderer.domElement);
 
     const loader = new THREE.GLTFLoader();
     loader.load(modelURL, (gltf) => {
@@ -96,9 +96,9 @@ async function detectObjects() {
         currentPredictions = predictions;
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-                predictions.forEach(prediction => {
+        predictions.forEach(prediction => {
             ctx.strokeStyle = 'green';
-            ctx.lineWidth = 4;
+                       ctx.lineWidth = 4;
             ctx.strokeRect(...prediction.bbox);
         });
 
@@ -111,5 +111,7 @@ async function detectObjects() {
     videoElement.play();
     detectObjects();
 })();
+
+
 
 
