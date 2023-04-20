@@ -77,18 +77,22 @@ async function render3DModel() {
     scene.setAttribute('arjs', 'sourceType: webcam; debugUIEnabled: false;');
     scene.setAttribute('vr-mode-ui', 'enabled: false');
 
-    const marker = document.createElement('a-marker');
-    marker.setAttribute('type', 'plane');
-    marker.setAttribute('size', '200 200');
-    scene.appendChild(marker);
+    const plane = document.createElement('a-plane');
+    plane.setAttribute('position', '0 0 -4');
+    plane.setAttribute('rotation', '-90 0 0');
+    plane.setAttribute('width', '2');
+    plane.setAttribute('height', '2');
+    plane.setAttribute('color', '#7BC8A4');
+    scene.appendChild(plane);
 
     const model = document.createElement('a-entity');
     model.setAttribute('gltf-model', `url(${modelURL})`);
     model.setAttribute('scale', '0.05 0.05 0.05');
-    model.setAttribute('position', '0 0 0');
-    marker.appendChild(model);
+    model.setAttribute('position', '0 0.05 0');
+    plane.appendChild(model);
 
     document.body.appendChild(scene);
+}
 }
 
 (async function () {
