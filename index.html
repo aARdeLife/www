@@ -16,26 +16,19 @@
             display: none;
             font-size: 0.8rem;
         }
-        #threeContainer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            display: none;
-            width: 50%;
-            height: 50%;
-        }
     </style>
 </head>
 <body>
     <div id="container">
         <video id="video" autoplay></video>
         <canvas id="canvas"></canvas>
-        <div id="threeContainer"></div>
         <div id="tooltip"></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gltf-loader/1.0.0/GLTFLoader.min.js"></script>
     <script src="app.js"></script>
