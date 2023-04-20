@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Model</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gltf-loader/1.0.0/GLTFLoader.min.js"></script>
+    <script>
+        let gltfData;
+        let objectBbox;
+
+        // Load the GLTF data and bounding box from sessionStorage
+        try {
+            gltfData = JSON.parse(sessionStorage.getItem('gltfData'));
+            objectBbox = JSON.parse(sessionStorage.getItem('objectBbox'));
+        } catch (error) {
+            console.error('Error parsing GLTF data or bounding box:', error);
+        }
+
+        if (gltfData && objectBbox) {
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer();
+
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+
+            const loader = new THREE.GLTFLoader();
+            loader.parse(gltfData, '', (gltf) => {
+                scene.add(gltf.scene);
+            }, (error) => {
+                console.error('Error rendering 3D model:', error);
+            });
+
+            camera.position.z = 5;
+
+            const animate = function () {
+                requestAnimationFrame(animate);
+                renderer.render(scene, camera);
+            };
+
+            animate();
+        } else {
+            document.body.innerHTML = '<h1>Error loading 3D model</h1>';
+        }
+    </script>
+</body>
+</html>
