@@ -13,18 +13,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gltf-loader/1.0.0/GLTFLoader.min.js"></script>
     <script>
-        let gltfData;
         let objectBbox;
+        let modelURL;
 
-        // Load the GLTF data and bounding box from sessionStorage
+        // Load the bounding box and model URL from sessionStorage
         try {
-            gltfData = JSON.parse(sessionStorage.getItem('gltfData'));
             objectBbox = JSON.parse(sessionStorage.getItem('objectBbox'));
+            modelURL = sessionStorage.getItem('modelURL');
         } catch (error) {
-            console.error('Error parsing GLTF data or bounding box:', error);
+            console.error('Error parsing bounding box or loading model URL:', error);
         }
 
-        if (gltfData && objectBbox) {
+        if (objectBbox && modelURL) {
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer();
@@ -33,9 +33,9 @@
             document.body.appendChild(renderer.domElement);
 
             const loader = new THREE.GLTFLoader();
-            loader.parse(gltfData, '', (gltf) => {
+            loader.load(modelURL, (gltf) => {
                 scene.add(gltf.scene);
-            }, (error) => {
+            }, undefined, (error) => {
                 console.error('Error rendering 3D model:', error);
             });
 
