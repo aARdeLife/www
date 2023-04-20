@@ -93,7 +93,6 @@ async function render3DModel() {
 
     document.body.appendChild(scene);
 }
-}
 
 (async function () {
     const videoElement = await setupCamera();
